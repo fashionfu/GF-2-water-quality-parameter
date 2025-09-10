@@ -175,4 +175,3 @@ python main.py
 ## 项目截图
 
 <img width="400" alt="image" src="https://github.com/fashionfu/GF-2-water-quality-parameter/assets/145452598/4af2f7c8-10a7-4df5-aef4-acc86c1b3f8a">
-<img width="400" alt="image" src="https://github.com/fashionfu/GF-2-water-quality-parameter/assets/145452598/ec10f738-7c55-44b3-b09c-92c75c90288">
