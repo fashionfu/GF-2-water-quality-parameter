@@ -171,7 +171,3 @@ python main.py
 本项目仅供学习和研究使用。
 
 ---
-
-## 项目截图
-
-<img width="400" alt="image" src="https://github.com/fashionfu/GF-2-water-quality-parameter/assets/145452598/4af2f7c8-10a7-4df5-aef4-acc86c1b3f8a">
