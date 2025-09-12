@@ -4,8 +4,8 @@
 
 本项目是一个基于高分二号（GF-2）卫星影像的河湖水质监测系统，通过遥感技术结合无人机数据进行水质参数反演。系统主要使用高分二号影像的0、1、2、3四个波段数据，通过波段运算操作计算汉江流域的NDWI、TP、TN、DO等水质参数，并结合ArcGIS、ENVI等软件进行后期处理。
 
-<img width="300" alt="image" src="https://github.com/fashionfu/GF-2-water-quality-parameter/assets/145452598/4af2f7c8-10a7-4df5-aef4-acc86c1b3f8a">
-<img width="400" alt="image" src="https://github.com/fashionfu/GF-2-water-quality-parameter/assets/145452598/ec10f738-7c55-44b3-b09c-c92c75c90288">
+<img width="400" alt="image" src="https://github.com/fashionfu/GF-2-water-quality-parameter/assets/145452598/4af2f7c8-10a7-4df5-aef4-acc86c1b3f8a">
+<img width="500" alt="image" src="https://github.com/fashionfu/GF-2-water-quality-parameter/assets/145452598/ec10f738-7c55-44b3-b09c-c92c75c90288">
 
 ## 主要功能
 
