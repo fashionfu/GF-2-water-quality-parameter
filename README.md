@@ -20,7 +20,7 @@
   <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/fashionfu/GF-2-water-quality-parameter/blob/main/GF2-systemDemo.png" alt="水质参数图1" width="300"/>
+      <img src="https://github.com/fashionfu/GF-2-water-quality-parameter/blob/main/GF2-systemDemo.png" alt="水质参数图1" width="600"/>
       <br><strong>遥感影像平台</strong>
     </td>
   </tr>
