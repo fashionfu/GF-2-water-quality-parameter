@@ -20,8 +20,8 @@
   <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/fashionfu/GF-2-water-quality-parameter/assets/145452598/4af2f7c8-10a7-4df5-aef4-acc86c1b3f8a" alt="水质参数图1" width="300"/>
-      <br><strong>各年份遥感影像</strong>
+      <img src="https://github.com/fashionfu/GF-2-water-quality-parameter/blob/main/GF2-systemDemo.png" alt="水质参数图1" width="300"/>
+      <br><strong>遥感影像平台</strong>
     </td>
     <td align="center">
       <img src="https://github.com/fashionfu/GF-2-water-quality-parameter/assets/145452598/ec10f738-7c55-44b3-b09c-c92c75c90288" alt="水质参数图2" width="300"/>
