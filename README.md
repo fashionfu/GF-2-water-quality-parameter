@@ -23,10 +23,6 @@
       <img src="https://github.com/fashionfu/GF-2-water-quality-parameter/blob/main/GF2-systemDemo.png" alt="水质参数图1" width="300"/>
       <br><strong>遥感影像平台</strong>
     </td>
-    <td align="center">
-      <img src="https://github.com/fashionfu/GF-2-water-quality-parameter/assets/145452598/ec10f738-7c55-44b3-b09c-c92c75c90288" alt="水质参数图2" width="300"/>
-      <br><strong>水质参数图</strong>
-    </td>
   </tr>
 </table>
 </div>
