@@ -853,6 +853,8 @@ useEffect(() => {
 - **清理函数**：返回清理函数避免内存泄漏
 - **条件执行**：通过条件判断避免不必要的执行
 
+// ... existing code ...
+
 ### 4.3 useRef Hook
 
 ```tsx
@@ -876,6 +878,255 @@ if (mapRef.current) {
 - **不触发重渲染**：修改 ref 不会触发组件重新渲染
 - **DOM 访问**：直接访问 DOM 元素
 - **实例存储**：存储可变值或第三方库实例
+
+### 4.4 生命周期钩子详解
+
+#### 4.4.1 什么是生命周期钩子？
+
+**生命周期钩子**是 React 组件在**不同阶段**自动调用的特殊函数，用于管理组件的**创建、更新和销毁**过程。
+
+#### 4.4.2 生命周期的作用
+
+1. **资源管理**：在组件创建时初始化资源，销毁时清理资源
+2. **副作用处理**：处理 API 调用、事件监听、定时器等副作用
+3. **性能优化**：在合适的时机进行优化操作
+4. **状态同步**：确保组件状态与外部系统保持同步
+
+#### 4.4.3 传统类组件生命周期
+
+```tsx
+class GeoScenePreciseLayer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      baseMapType: 'osm',
+      isLoading: false
+    };
+    console.log('1. 构造函数 - 组件创建');
+  }
+
+  componentWillMount() {
+    console.log('2. 组件即将挂载');
+  }
+
+  componentDidMount() {
+    console.log('3. 组件已挂载 - 初始化地图');
+    // 初始化地图实例
+    const map = new Map({
+      target: this.mapRef.current,
+      layers: [baseLayer]
+    });
+    this.mapInstance = map;
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    console.log('4. 组件即将更新');
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log('5. 组件已更新');
+    // 处理更新后的逻辑
+  }
+
+  componentWillUnmount() {
+    console.log('6. 组件即将卸载 - 清理资源');
+    // 清理地图实例
+    if (this.mapInstance) {
+      this.mapInstance.setTarget(undefined);
+      this.mapInstance = null;
+    }
+  }
+
+  render() {
+    return <div ref={this.mapRef} />;
+  }
+}
+```
+
+#### 4.4.4 函数组件中的生命周期模拟
+
+使用 `useEffect` Hook 模拟传统生命周期：
+
+```tsx
+const GeoScenePreciseLayer: React.FC = () => {
+  const [baseMapType, setBaseMapType] = useState('osm');
+  const [isLoading, setIsLoading] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<Map | null>(null);
+
+  // 1. 组件挂载时的初始化（componentDidMount）
+  useEffect(() => {
+    console.log('✅ 组件挂载 - 创建瓦片网格');
+
+    // 创建瓦片网格
+    const grid = new TileGrid({
+      origin: PRECISE_CONFIG.tileGrid.origin,
+      resolutions: PRECISE_CONFIG.tileGrid.resolutions,
+      tileSize: PRECISE_CONFIG.tileGrid.tileSize,
+    });
+    setTileGrid(grid);
+  }, []); // 空依赖数组，只在挂载时执行
+
+  // 2. 依赖变化时的更新（componentDidUpdate）
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    console.log('🔄 组件更新 - 初始化地图');
+
+    const timer = setTimeout(() => {
+      // 创建地图实例
+      const map = new Map({
+        target: mapRef.current,
+        layers: [baseLayer],
+        view: new View({
+          center: fromLonLat([116.4, 39.9]),
+          zoom: 10
+        })
+      });
+
+      mapInstanceRef.current = map;
+    }, 100);
+
+    // 清理函数
+    return () => {
+      clearTimeout(timer);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.setTarget(undefined);
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [baseMapType]); // 依赖 baseMapType，底图类型改变时重新执行
+
+  // 3. 组件卸载时的清理（componentWillUnmount）
+  useEffect(() => {
+    return () => {
+      console.log('️ 组件卸载 - 清理资源');
+
+      // 清理地图实例
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.setTarget(undefined);
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
+
+  return (
+    <div ref={mapRef} style={{ width: '100%', height: '400px' }}>
+      {/* 地图内容 */}
+    </div>
+  );
+};
+```
+
+#### 4.4.5 生命周期阶段详解
+
+**1. 挂载阶段（Mounting）**
+```tsx
+// 组件创建和插入到 DOM 中
+useEffect(() => {
+  // 初始化逻辑
+  console.log('组件挂载');
+  
+  // 设置事件监听器
+  const handleResize = () => console.log('窗口大小改变');
+  window.addEventListener('resize', handleResize);
+  
+  // 清理函数
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+}, []); // 空依赖数组
+```
+
+**2. 更新阶段（Updating）**
+```tsx
+// 组件重新渲染
+useEffect(() => {
+  // 更新逻辑
+  console.log('组件更新');
+  
+  // 根据新状态更新地图
+  if (mapInstanceRef.current) {
+    updateMapView();
+  }
+}, [baseMapType, zoomLevel]); // 依赖特定状态
+```
+
+**3. 卸载阶段（Unmounting）**
+```tsx
+// 组件从 DOM 中移除
+useEffect(() => {
+  return () => {
+    // 清理逻辑
+    console.log('组件卸载');
+    
+    // 清理定时器
+    clearInterval(timer);
+    
+    // 清理事件监听器
+    document.removeEventListener('click', handleClick);
+    
+    // 清理第三方库实例
+    if (mapInstance) {
+      mapInstance.destroy();
+    }
+  };
+}, []);
+```
+
+#### 4.4.6 常见生命周期使用模式
+
+**数据获取模式：**
+```tsx
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/data');
+      const data = await response.json();
+      setData(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchData();
+}, []); // 只在挂载时获取数据
+```
+
+**订阅模式：**
+```tsx
+useEffect(() => {
+  const subscription = eventBus.subscribe('dataUpdate', handleDataUpdate);
+  
+  return () => {
+    subscription.unsubscribe();
+  };
+}, []);
+```
+
+**定时器模式：**
+```tsx
+useEffect(() => {
+  const timer = setInterval(() => {
+    setCurrentTime(new Date());
+  }, 1000);
+  
+  return () => {
+    clearInterval(timer);
+  };
+}, []);
+```
+
+#### 4.4.7 生命周期最佳实践
+
+1. **避免在 render 中执行副作用**
+2. **使用依赖数组控制执行时机**
+3. **及时清理资源避免内存泄漏**
+4. **将相关逻辑放在同一个 useEffect 中**
+5. **使用条件判断避免不必要的执行**
 
 ## 5. 组件通信与 Props
 
