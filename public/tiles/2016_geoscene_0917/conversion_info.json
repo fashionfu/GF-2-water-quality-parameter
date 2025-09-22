@@ -1,0 +1,193 @@
+{
+  "total_tiles": 13,
+  "zoom_levels": [
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "geographic_bounds": {
+    "xMin": 12084408.66,
+    "yMin": 3826328.42,
+    "xMax": 12108427.13,
+    "yMax": 3848548.72,
+    "projection": "EPSG:3857"
+  },
+  "tile_info": {
+    "format": "PNG",
+    "size": "256x256",
+    "dpi": 96
+  },
+  "converted_tiles": [
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L06\\R002be57f\\C00000066.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\6\\51\\25.png",
+      "zoom": 6,
+      "source_coords": {
+        "row": 2876799,
+        "col": 102
+      },
+      "target_coords": {
+        "x": 51,
+        "y": 25
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L07\\R0057cafe\\C000000cd.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\7\\102\\51.png",
+      "zoom": 7,
+      "source_coords": {
+        "row": 5753598,
+        "col": 205
+      },
+      "target_coords": {
+        "x": 102,
+        "y": 51
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L07\\R0057caff\\C000000cd.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\7\\102\\51.png",
+      "zoom": 7,
+      "source_coords": {
+        "row": 5753599,
+        "col": 205
+      },
+      "target_coords": {
+        "x": 102,
+        "y": 51
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L08\\R00af95fd\\C0000019a.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\8\\205\\103.png",
+      "zoom": 8,
+      "source_coords": {
+        "row": 11507197,
+        "col": 410
+      },
+      "target_coords": {
+        "x": 205,
+        "y": 103
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L08\\R00af95fe\\C0000019a.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\8\\205\\103.png",
+      "zoom": 8,
+      "source_coords": {
+        "row": 11507198,
+        "col": 410
+      },
+      "target_coords": {
+        "x": 205,
+        "y": 103
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L09\\R015f2bfb\\C00000334.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\9\\410\\206.png",
+      "zoom": 9,
+      "source_coords": {
+        "row": 23014395,
+        "col": 820
+      },
+      "target_coords": {
+        "x": 410,
+        "y": 206
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L09\\R015f2bfb\\C00000335.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\9\\410\\206.png",
+      "zoom": 9,
+      "source_coords": {
+        "row": 23014395,
+        "col": 821
+      },
+      "target_coords": {
+        "x": 410,
+        "y": 206
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L09\\R015f2bfc\\C00000334.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\9\\410\\206.png",
+      "zoom": 9,
+      "source_coords": {
+        "row": 23014396,
+        "col": 820
+      },
+      "target_coords": {
+        "x": 410,
+        "y": 206
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L09\\R015f2bfc\\C00000335.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\9\\410\\206.png",
+      "zoom": 9,
+      "source_coords": {
+        "row": 23014396,
+        "col": 821
+      },
+      "target_coords": {
+        "x": 410,
+        "y": 206
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L10\\R02be57f7\\C00000669.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\10\\820\\413.png",
+      "zoom": 10,
+      "source_coords": {
+        "row": 46028791,
+        "col": 1641
+      },
+      "target_coords": {
+        "x": 820,
+        "y": 413
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L10\\R02be57f7\\C0000066a.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\10\\820\\413.png",
+      "zoom": 10,
+      "source_coords": {
+        "row": 46028791,
+        "col": 1642
+      },
+      "target_coords": {
+        "x": 820,
+        "y": 413
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L10\\R02be57f8\\C00000669.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\10\\820\\413.png",
+      "zoom": 10,
+      "source_coords": {
+        "row": 46028792,
+        "col": 1641
+      },
+      "target_coords": {
+        "x": 820,
+        "y": 413
+      }
+    },
+    {
+      "source": "public\\images\\2016\\GF2_data_0917_Tiles\\_alllayers\\L10\\R02be57f8\\C0000066a.png",
+      "target": "public\\tiles\\2016_geoscene_0917\\10\\820\\413.png",
+      "zoom": 10,
+      "source_coords": {
+        "row": 46028792,
+        "col": 1642
+      },
+      "target_coords": {
+        "x": 820,
+        "y": 413
+      }
+    }
+  ]
+}

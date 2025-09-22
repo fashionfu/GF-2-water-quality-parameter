@@ -1,0 +1,26 @@
+{
+    "name": "haoping-analysis",
+    "version": "1.0.0",
+    "description": "安康蒿坪镇遥感影像分析模块",
+    "main": "index.js",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "antd": "^5.0.0",
+        "geotiff": "^2.1.3",
+        "ol": "^8.2.0",
+        "proj4": "^2.19.10",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.2.0",
+        "@types/react-dom": "^18.2.0",
+        "@vitejs/plugin-react": "^4.0.0",
+        "typescript": "^5.0.0",
+        "vite": "^4.4.0"
+    }
+}
