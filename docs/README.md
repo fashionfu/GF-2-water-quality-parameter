@@ -75,6 +75,316 @@ return (
 - **ref 引用**：使用 `ref={mapRef}` 获取 DOM 引用
 - **注释语法**：使用 `{/* */}` 在 JSX 中添加注释
 
+### 1.3 JavaScript 表达式在 JSX 中的应用
+
+#### 1.3.1 什么是 JavaScript 表达式？
+
+**表达式**是 JavaScript 中能够**计算并返回一个值**的代码片段。每个表达式都会产生一个结果。
+
+```javascript
+// 这些都是表达式
+5 + 3                    // 返回 8
+"Hello" + " World"       // 返回 "Hello World"
+x > 10                   // 返回 true 或 false
+user.name                // 返回用户名字
+Math.max(1, 2, 3)        // 返回 3
+```
+
+#### 1.3.2 表达式的基本类型
+
+**字面量表达式：**
+```javascript
+// 数字字面量
+42
+3.14
+-10
+
+// 字符串字面量
+"Hello"
+'World'
+`Template String`
+
+// 布尔字面量
+true
+false
+
+// 对象字面量
+{ name: "John", age: 30 }
+{ display: 'flex', color: 'red' }
+
+// 数组字面量
+[1, 2, 3, 4]
+['apple', 'banana', 'orange']
+```
+
+**标识符表达式：**
+```javascript
+// 变量名
+user
+count
+isVisible
+
+// 对象属性
+user.name
+user.age
+config.database.host
+
+// 数组元素
+items[0]
+users[userId]
+```
+
+**运算符表达式：**
+```javascript
+// 算术运算符
+a + b
+x - y
+width * height
+total / count
+remainder % divisor
+
+// 比较运算符
+age >= 18
+score === 100
+name !== ""
+
+// 逻辑运算符
+isLoggedIn && user.name
+isVisible || isAdmin
+!isLoading
+
+// 条件运算符（三元运算符）
+age >= 18 ? "adult" : "minor"
+isVisible ? "block" : "none"
+```
+
+**函数调用表达式：**
+```javascript
+// 函数调用
+Math.max(1, 2, 3)
+console.log("Hello")
+setTimeout(callback, 1000)
+
+// 方法调用
+user.getName()
+array.map(item => item * 2)
+string.toUpperCase()
+```
+
+#### 1.3.3 在 React JSX 中的表达式使用
+
+**基本表达式：**
+```tsx
+const name = "John";
+const age = 25;
+const isVisible = true;
+
+return (
+  <div>
+    {/* 变量表达式 */}
+    <h1>{name}</h1>
+    
+    {/* 计算表达式 */}
+    <p>Next year I'll be {age + 1}</p>
+    
+    {/* 条件表达式 */}
+    {isVisible && <p>This is visible</p>}
+    
+    {/* 三元运算符 */}
+    <span>{age >= 18 ? "Adult" : "Minor"}</span>
+  </div>
+);
+```
+
+**对象表达式：**
+```tsx
+const user = { name: "John", age: 25 };
+const style = { color: "red", fontSize: "16px" };
+
+return (
+  <div>
+    {/* 对象属性访问 */}
+    <h1>{user.name}</h1>
+    
+    {/* 对象作为样式 */}
+    <div style={style}>Styled content</div>
+    
+    {/* 内联对象 */}
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      Content
+    </div>
+  </div>
+);
+```
+
+**数组表达式：**
+```tsx
+const items = ["apple", "banana", "orange"];
+const numbers = [1, 2, 3, 4, 5];
+
+return (
+  <div>
+    {/* 数组长度 */}
+    <p>Total items: {items.length}</p>
+    
+    {/* 数组映射 */}
+    <ul>
+      {items.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+    
+    {/* 数组过滤 */}
+    <p>Even numbers: {numbers.filter(n => n % 2 === 0).join(", ")}</p>
+  </div>
+);
+```
+
+**函数调用表达式：**
+```tsx
+const formatDate = (date) => date.toLocaleDateString();
+const calculateTotal = (items) => items.reduce((sum, item) => sum + item.price, 0);
+
+const items = [
+  { name: "Apple", price: 1.5 },
+  { name: "Banana", price: 0.8 }
+];
+
+return (
+  <div>
+    {/* 函数调用 */}
+    <p>Today: {formatDate(new Date())}</p>
+    
+    {/* 复杂计算 */}
+    <p>Total: ${calculateTotal(items).toFixed(2)}</p>
+    
+    {/* 内联函数调用 */}
+    <p>Random: {Math.random().toFixed(2)}</p>
+  </div>
+);
+```
+
+#### 1.3.4 项目中的实际应用
+
+基于 `GeoScenePreciseLayer.tsx` 的实际例子：
+
+```tsx
+// 来自 GeoScenePreciseLayer.tsx 的实际表达式
+const GeoScenePreciseLayer: React.FC = () => {
+  // 1. 变量声明表达式
+  const [baseMapType, setBaseMapType] = useState<keyof typeof BASE_MAPS>('osm');
+  
+  // 2. 对象属性访问表达式
+  const currentLayers = mapInstanceRef.current.getLayers().getArray();
+  
+  // 3. 条件表达式
+  if (!mapInstanceRef.current) return;
+  
+  // 4. 函数调用表达式
+  const newBaseLayer = new TileLayer({
+    source: BASE_MAPS[newBaseMapType].source()
+  });
+  
+  // 5. 在 JSX 中的表达式
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* 对象键的映射表达式 */}
+      {Object.keys(BASE_MAPS).map((key) => (
+        <Option key={key} value={key}>
+          {BASE_MAPS[key as keyof typeof BASE_MAPS].name}
+        </Option>
+      ))}
+    </div>
+  );
+};
+```
+
+#### 1.3.5 表达式的优先级和结合性
+
+**运算符优先级：**
+```javascript
+// 算术运算符优先级
+2 + 3 * 4        // 14 (不是 20)
+(2 + 3) * 4      // 20
+
+// 比较运算符优先级
+a + b > c && d < e    // 等同于 (a + b) > c && d < e
+```
+
+**结合性：**
+```javascript
+// 左结合
+a - b - c        // 等同于 (a - b) - c
+
+// 右结合
+a = b = c        // 等同于 a = (b = c)
+```
+
+#### 1.3.6 常见表达式模式
+
+**条件表达式：**
+```javascript
+// 三元运算符
+condition ? valueIfTrue : valueIfFalse
+
+// 逻辑与
+condition && value
+
+// 逻辑或
+value || defaultValue
+```
+
+**对象和数组操作：**
+```javascript
+// 对象展开
+{...obj, newProp: value}
+
+// 数组展开
+[...array, newItem]
+
+// 解构赋值
+const {name, age} = user
+const [first, second] = array
+```
+
+**函数表达式：**
+```javascript
+// 箭头函数
+(x) => x * 2
+(x, y) => x + y
+() => "Hello"
+
+// 立即执行函数
+(function() { return "Hello"; })()
+(() => "Hello")()
+```
+
+#### 1.3.7 为什么需要双层大括号？
+
+在 React JSX 中，双层大括号 `{{}}` 的原因：
+
+1. **外层大括号 `{}`**：告诉 JSX 这是 JavaScript 表达式
+2. **内层大括号 `{}`**：JavaScript 对象字面量语法
+
+```tsx
+// 正确：双层大括号
+<div style={{ display: 'flex', color: 'red' }}>
+
+// 错误：单层大括号
+<div style={ display: 'flex', color: 'red' }>
+
+// 等价于：
+const styleObject = { display: 'flex', color: 'red' };
+<div style={styleObject}>
+```
+
+**JavaScript 表达式的核心特点：**
+1. **总是返回一个值** - 每个表达式都会产生结果
+2. **可以嵌套** - 表达式可以包含其他表达式
+3. **有优先级** - 运算符有明确的优先级规则
+4. **类型灵活** - 可以是任何 JavaScript 数据类型
+5. **在 JSX 中需要大括号** - `{expression}` 告诉 React 这是 JavaScript 代码
+
 ## 2. 单向数据流实现
 
 ### 2.1 状态管理架构
