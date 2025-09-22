@@ -1,1117 +1,831 @@
-# 遥感影像显示技术文档
+# React JSX 与单向数据流技术分析文档
 
-## 文档概览
+## 项目概述
 
-本目录包含了遥感影像在Web地图上显示的完整技术文档
+本文档深入分析 `haoping-analysis` 项目中 React 组件的 JSX 语法、单向数据流实现以及 React 框架相关函数的使用。该项目是一个基于 React + TypeScript + OpenLayers 的遥感影像分析平台。
 
-## 文档结构
+## 1. JSX 语法分析
 
-### 📋 核心文档
-- **[REMOTE_SENSING_DISPLAY_ANALYSIS.md](./REMOTE_SENSING_DISPLAY_ANALYSIS.md)** - 技术方案分析
-- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - 详细实施指南
-- **[PROBLEM_DIAGNOSIS.md](./PROBLEM_DIAGNOSIS.md)** - 问题诊断与解决
-- **[TECHNICAL_ARCHITECTURE.md](./TECHNICAL_ARCHITECTURE.md)** - 技术架构说明
+### 1.1 基础 JSX 结构
 
-### 主要挑战
-1. **坐标系不匹配** - UTM投影与Web Mercator投影不兼容
-2. **显示位置错误** - 影像无法正确叠加在OSM底图上
-3. **缩放比例问题** - 影像显示比例不正确
-4. **技术选型困难** - 不确定使用哪种瓦片生成方案
-
-**实施步骤：**
-1. **坐标转换** - 使用ArcGIS Pro/GeoScene Pro将UTM投影转换为Web Mercator
-2. **瓦片生成** - 使用GDAL或ArcGIS Pro生成标准瓦片
-3. **本地服务** - 通过Python HTTP服务器提供瓦片服务
-4. **Web显示** - 使用OpenLayers XYZ图层加载瓦片
-
-## 技术架构
-
-```
-用户界面层 (React + OpenLayers)
-         ↓
-地图渲染层 (OpenLayers Map Engine)
-         ↓
-数据服务层 (HTTP/CORS服务)
-         ↓
-数据存储层 (瓦片文件)
-```
-
-## 核心组件
-
-### 1. 坐标转换模块
-- **输入**：UTM Zone 49N (EPSG:32649)
-- **输出**：Web Mercator (EPSG:3857)
-- **工具**：ArcGIS Pro, GDAL, GeoScene Pro
-
-### 2. 瓦片生成模块
-- **格式**：PNG/JPEG
-- **方案**：Web Mercator Quad
-- **级别**：0-18
-- **大小**：256x256像素
-
-### 3. Web显示模块
-- **引擎**：OpenLayers 8
-- **图层**：XYZ Tile Layer
-- **投影**：EPSG:3857
-- **范围**：蒿坪镇区域
-
-## 性能优化
-
-### 瓦片优化
-- 使用JPEG压缩减少文件大小
-- 多进程生成加速处理
-- 按需加载提高响应速度
-
-### 服务器优化
-- 配置HTTP缓存头
-- 使用Nginx静态文件服务
-- 启用Gzip压缩
-
-### 前端优化
-- 配置瓦片缓存
-- 预加载相邻瓦片
-- 优化地图交互
-
-## 故障排除
-
-### 常见问题
-1. **坐标转换失败** - 检查源数据投影信息
-2. **瓦片生成失败** - 检查输出目录权限
-3. **瓦片无法加载** - 检查服务器状态和CORS配置
-4. **影像位置错误** - 检查坐标转换和地图配置
-
-### 调试工具
-- 浏览器开发者工具
-- GDAL命令行工具
-- 网络请求监控
-- 地图控制台日志
-
-## 扩展功能
-
-### 多数据源支持
-- 多年份遥感数据
-- 多传感器数据
-- 多分辨率数据
-
-### 高级功能
-- 实时数据处理
-- 动态投影转换
-- 用户交互优化
-- 数据下载功能
-
-## 部署方案
-
-### 开发环境
-- React开发服务器
-- Python CORS服务器
-- 本地文件系统
-
-### 生产环境
-- Nginx反向代理
-- 静态文件服务
-- CDN加速 (可选)
-
-## 技术支持
-
-### 文档资源
-- 详细技术分析
-- 分步实施指南
-- 问题诊断手册
-- 快速开始教程
-
-### 工具支持
-- GDAL命令行工具
-- ArcGIS Pro/GeoScene Pro
-- OpenLayers文档
-- React开发工具
-
-## 总结
-
-通过系统性的技术分析和实施指南，您应该能够：
-
-1. **理解问题本质** - 坐标系不匹配是核心问题
-2. **选择合适方案** - 预处理+本地瓦片是最佳选择
-3. **按步骤实施** - 坐标转换 → 瓦片生成 → Web显示
-4. **解决常见问题** - 参考故障排除指南
-5. **优化性能** - 使用最佳实践配置
-
-**关键成功因素：**
-- ✅ 正确的坐标转换
-- ✅ 合适的瓦片生成参数
-- ✅ 稳定的Web服务
-- ✅ 正确的OpenLayers配置
-- ✅ 充分的测试验证
-
-# AI代码生成的最佳实践：提示词模板与优化技巧
-
-## 目录
-- [为什么大多数人用AI写代码效率反而更低？](#为什么大多数人用ai写代码效率反而更低)
-- [AI代码生成的核心原理](#ai代码生成的核心原理)
-- [提示工程的金字塔模型](#提示工程的金字塔模型)
-- [AI代码生成超全指南：提示词工程](#ai代码生成超全指南提示词工程)
-- [十大高效AI代码生成提示词模板](#十大高效ai代码生成提示词模板)
-- [提示词优化的十大实战技巧](#提示词优化的十大实战技巧)
-- [不同编程场景的优化策略](#不同编程场景的优化策略)
-- [常见陷阱与解决方案](#常见陷阱与解决方案)
-- [团队协作中的AI代码生成](#团队协作中的ai代码生成)
-- [未来趋势与持续学习](#未来趋势与持续学习)
-- [结语：从工具使用者到提示工程师](#结语从工具使用者到提示工程师)
-
-## 为什么大多数人用AI写代码效率反而更低？
-
-根据Stack Overflow 2023年的开发者调查，超过68%的开发者使用AI辅助编程，但只有31%认为它显著提高了生产力。核心问题在于：大多数开发者不知道如何正确"驾驭"AI。
-
-高效用户不是简单地要求AI"写一个登录页面"，而是采用结构化的提示策略，清晰地定义需求、约束和期望结果。
-
-## AI代码生成的核心原理
-
-### AI编程助手的三层思维模型
-
-现代AI编程助手基于大型语言模型(LLM)构建，它们的"思考"过程可分为三层：
-
-1. **上下文理解层**：模型首先理解你的提示词和已有代码，建立问题的心智模型
-2. **知识检索层**：从训练数据中提取相关编程知识、设计模式和最佳实践
-3. **代码生成层**：基于前两层，生成最可能符合要求的代码序列
-
-一项由斯坦福大学进行的研究表明，提示词质量对最终代码质量的影响高达78%。
-
-### 代码生成的关键限制因素
-
-- **训练数据截止点**：大多数模型的知识在某个时间点截止
-- **上下文窗口限制**：模型一次只能"看到"有限的文本
-- **推理深度有限**：复杂算法和多步骤推理能力不如人类开发者
-- **幻觉问题**：可能生成看似合理但实际不存在或错误的API、函数或库
-
-## 提示工程的金字塔模型
-
-### 第一层：基础提示（大多数开发者停留在这一层）
-```
-"写一个用户登录函数"
-"创建一个待办事项应用"
-```
-这类提示过于简单，缺乏具体约束和上下文。
-
-### 第二层：结构化提示
-```
-"用Node.js和Express创建一个用户登录API端点，包含邮箱验证和密码哈希，使用MongoDB存储用户数据"
-```
-提供了技术栈和基本功能需求，但仍然缺乏详细规范。
-
-### 第三层：上下文增强提示
-```
-"我正在开发一个教育平台，使用React前端和Node.js后端。需要实现用户登录功能。
-当前代码库结构如下：[文件结构]
-已有的用户模型如下：[代码片段]
-请实现一个登录API端点，处理以下情况：
-1. 邮箱格式验证
-2. 密码强度检查
-3. 账户锁定机制（5次失败尝试）
-4. JWT令牌生成
-使用我们现有的错误处理中间件。"
-```
-
-### 第四层：专家级提示（10倍效能区间）
-```
-"角色：你是一位资深的Node.js后端开发专家，专注于安全和性能优化
-
-背景：我们正在构建一个金融科技应用，使用TypeScript、Express和PostgreSQL。应用需要符合PCI DSS安全标准。
-
-任务：实现用户登录API端点，需要：
-1. 使用Argon2进行密码哈希（符合我们的安全策略）
-2. 实现渐进式延迟和账户锁定机制防止暴力攻击
-3. 生成短期访问令牌和长期刷新令牌
-4. 记录所有登录尝试用于审计
-5. 确保端点性能（响应时间<200ms）
-
-现有代码和约束：
-[相关代码片段]
-
-输出格式：
-1. TypeScript代码（带类型注释）
-2. 单元测试用例
-3. 简短的代码解释和安全考量
-
-额外考虑：代码将由初级开发者维护，请保持清晰的结构和充分的注释"
-```
-
-## AI代码生成超全指南：提示词工程
-
-### 一、提示词工程：让AI听懂你的需求
-
-#### 1. 基础概念：给AI下指令的学问
-想象你在教新同事写代码——要说清楚做什么、怎么做、注意哪些细节。提示词工程就是类似的过程：通过精心设计的指令，让AI生成符合预期的代码或内容。
-
-**关键要素：**
-- **任务目标**：像写需求文档一样明确（比如"生成登录页面的Vue组件"）
-- **风格要求**：如同代码评审，指定技术栈、代码规范（如"使用Composition API"）
-- **避坑指南**：提前说明常见错误（如"禁止使用var声明变量"）
-- **上下文信息**：涉及到的文件、组件库的文档地址等等（在cursor中使用@可以引入文件和web地址）
-
-#### 2. 为什么需要关注提示词？
-好的提示词能：
-- 减少反复调试的时间
-- 避免生成无用代码（比如过时的jQuery写法）
-- 保持团队代码风格统一
-
-### 二、写给程序员的提示词设计指南
-
-#### 1. 设计原则：像写测试用例一样写提示
-
-**反例 ❌**
-```
-"写个搜索功能"
-```
-
-**正例 ✅**
-```
-用Vue 3实现商品搜索功能，要求：
-1. 使用<script setup>语法
-2. 搜索框防抖处理（300ms延迟）
-3. 调用/src/api/search.js中的postSearch方法
-4. 展示结果时显示商品名称、价格和缩略图
-5. 网络错误时弹出Element Plus的ElMessage提示
-```
-
-#### 2. 优化技巧：拆解复杂需求
-把大需求拆成提示链（Prompt Chaining）：
-
-**第一阶段：生成基础组件**
-```
-用Vue 3写一个带 loading 状态的按钮组件：
-- 接收loading布尔值prop
-- loading时显示旋转图标
-- 使用Tailwind CSS样式
-```
-
-**第二阶段：集成到业务逻辑**
-```
-在刚才的按钮组件基础上：
-1. 点击时调用/login接口
-2. 请求期间自动进入loading状态
-3. 接口返回401错误时触发全局消息提示
-```
-
-#### 3. 高阶技巧：让AI扮演角色
-```
-# 角色
-你是资深前端TL，需要评审以下代码：
-<此处粘贴代码>
-
-# 审查重点
-1. Vueuse是否符合最佳实践
-2. 内存泄漏风险
-3. 响应式数据拆分是否合理
-
-# 要求
-用代码注释的形式指出问题，并给出优化建议
-```
-
-### 三、提示词工程的具体场景（以代码生成为例）
-
-#### 1. 前后端交互
-
-**需求**：根据后台的接口代码，生成出前后端交互代码。
-
-**提示词设计**：
-```
-# 角色
-你是拥有资深经验的前端工程师，负责编写前端代码来调用后端接口，并处理接口返回的数据，将其展示在页面上。
-
-# 目标
-接口信息：后端有个搜索商品的接口/api/searchProducts，请求方法是 POST 。请求体需要包含一个参数{ "keyword": "string" }用于搜索关键词，返回的数据格式为 JSON。
-
-# 交互流程
-请写前端代码实现搜索功能，在用户输入关键词并点击搜索按钮后，根据接口请求类型，使用src/api/manage.js中的对应请求方法如postAction，构造请求体发送请求到该接口，接口响应后在页面展示符合条件的商品名称和价格。
-
-# 接口返回结果
-后端接口返回的数据格式如下：
-[
-    {
-        "id": 1,
-        "name": "大米",
-        "price": 30
-    },
-]
-
-组件数据DataSource
-[
-    {
-        "id": 1,
-        "productName": "大米",//对应接口的name字段
-        "price": 30//对应接口的price字段
-    }
-]
-
-前端页面需要将接口数据转换为组件数据DataSource。
-
-# 要求
-代码要具有良好的可读性和可维护性，遵循前端开发的最佳实践。
-对接口调用进行错误处理，当网络请求失败时，要给出相应的提示信息。
-提供详细的代码注释，解释每一步的操作和逻辑。
-```
-
-#### 2. 造mock数据
-
-**需求**：生成测试用的模拟数据，需约束字段范围和数据类型。
-
-**提示词示例**：
-```
-生成包含 50 条用户数据的 JSON 文件，字段要求：
-- id: 自增整数（从 1 开始）
-- name: 中文姓名（随机生成）
-- gender: "male" 或 "female"
-- createdAt: 符合 ISO 8601 格式的时间戳
-```
-
-#### 3. 生成枚举
-
-**需求**：创建状态码枚举类，需定义命名规范和值范围。
-
-**提示词示例**：
-```
-// 用 TypeScript 编写 HTTP 状态码枚举
-enum HttpStatus {
-  OK = { code: 200, message: "请求成功" },
-  NOT_FOUND = { code: 404, message: "资源未找到" },
-  SERVER_ERROR = { code: 500, message: "服务器错误" }
+```tsx
+// HaopingAnalysis.tsx - 主组件
+const HaopingAnalysis: React.FC = () => {
+  return (
+    <div className="haoping-analysis">
+      <div className="map-wrapper">
+        <GeoScenePreciseLayer />
+      </div>
+    </div>
+  )
 }
-
-要求：
-1. 提供枚举值类型定义
-2. 实现通过 code 值反向查找 message 的方法
 ```
 
-#### 4. 测试用例生成
+**JSX 特点分析：**
+- **函数式组件**：使用 `React.FC` 类型定义，确保类型安全
+- **JSX 表达式**：使用 `return` 返回 JSX 元素
+- **className 属性**：使用 `className` 而非 `class`（JSX 语法要求）
+- **组件嵌套**：父组件包含子组件 `GeoScenePreciseLayer`
 
-**需求**：为 Vue 组件生成单元测试用例，覆盖边界条件。
+### 1.2 复杂 JSX 结构
 
-**提示词示例**：
-```
-为以下组件生成 Vitest 测试用例：
-```vue
-<template>
-  <div>{{ count }}</div>
-  <button @click="increment">+</button>
-</template>
-
-<script setup>
-const count = ref(0)
-const increment = () => count.value++
-</script>
-```
-
-要求：
-1. 测试初始值为 0
-2. 测试点击后数值增加
-3. 使用 Testing Library 模拟用户操作
-```
-
-#### 5. 跨平台代码转换
-
-**需求**：将 Vue 2 Options API 代码迁移到 Vue 3 组合式 API。
-
-**提示词示例**：
-```
-将以下 Vue 2 代码转换为 Vue 3 Composition API：
-```vue
-<template>
-  <div>
-    <p>{{ count }}</p>
-    <button @click="increment">Add</button>
+```tsx
+// GeoScenePreciseLayer.tsx - 复杂组件
+return (
+  <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    {/* 地图容器 */}
+    <div
+      ref={mapRef}
+      style={{
+        flex: 1,
+        width: '100%',
+        position: 'relative',
+        minHeight: '400px'
+      }}
+    />
+    
+    {/* 控制按钮区域 */}
+    <div style={{ 
+      padding: '10px', 
+      borderTop: '1px solid #e8e8e8', 
+      display: 'flex', 
+      gap: '10px', 
+      alignItems: 'center',
+      flexWrap: 'wrap',
+      backgroundColor: '#fafafa',
+      minHeight: '60px'
+    }}>
+      <span style={{ fontWeight: 'bold', color: '#333' }}>底图:</span>
+      <Select value={baseMapType} onChange={switchBaseMap} style={{ width: 120 }}>
+        {Object.keys(BASE_MAPS).map((key) => (
+          <Option key={key} value={key}>
+            {BASE_MAPS[key as keyof typeof BASE_MAPS].name}
+          </Option>
+        ))}
+      </Select>
+    </div>
   </div>
-</template>
+);
+```
 
-<script>
-export default {
-  data() {
-    return { count: 0 }
-  },
-  methods: {
-    increment() {
-      this.count++
+**高级 JSX 特性：**
+- **内联样式**：使用对象语法 `style={{}}`
+- **条件渲染**：通过 `{condition && <element>}` 实现
+- **列表渲染**：使用 `map()` 方法渲染动态列表
+- **ref 引用**：使用 `ref={mapRef}` 获取 DOM 引用
+- **注释语法**：使用 `{/* */}` 在 JSX 中添加注释
+
+## 2. 单向数据流实现
+
+### 2.1 状态管理架构
+
+```tsx
+// 状态定义
+const [baseMapType, setBaseMapType] = useState<keyof typeof BASE_MAPS>('osm');
+const [isLoading, setIsLoading] = useState(false);
+const [remoteSensingLayer, setRemoteSensingLayer] = useState<TileLayer<XYZ> | null>(null);
+const [tileGrid, setTileGrid] = useState<TileGrid | null>(null);
+```
+
+**单向数据流特点：**
+- **状态提升**：所有状态在父组件中管理
+- **类型安全**：使用 TypeScript 泛型定义状态类型
+- **不可变更新**：通过 `setState` 函数更新状态
+- **单一数据源**：每个状态只有一个来源
+
+### 2.2 数据流向图
+
+```
+父组件状态 (State)
+    ↓
+子组件 Props
+    ↓
+用户交互 (Events)
+    ↓
+状态更新函数 (setState)
+    ↓
+重新渲染 (Re-render)
+```
+
+### 2.3 事件处理与状态更新
+
+```tsx
+// 底图切换 - 状态更新示例
+const switchBaseMap = (newBaseMapType: keyof typeof BASE_MAPS) => {
+  if (!mapInstanceRef.current) return;
+
+  const currentLayers = mapInstanceRef.current.getLayers().getArray();
+  const currentBaseLayer = currentLayers[0];
+
+  if (currentBaseLayer) {
+    mapInstanceRef.current.removeLayer(currentBaseLayer);
+  }
+
+  const newBaseLayer = new TileLayer({
+    source: BASE_MAPS[newBaseMapType].source()
+  });
+  mapInstanceRef.current.getLayers().insertAt(0, newBaseLayer);
+  
+  // 状态更新触发重新渲染
+  setBaseMapType(newBaseMapType);
+  console.log(`切换底图到: ${BASE_MAPS[newBaseMapType].name}`);
+};
+```
+
+**数据流实现：**
+1. **用户交互**：点击底图选择器
+2. **事件处理**：`switchBaseMap` 函数被调用
+3. **状态更新**：`setBaseMapType` 更新状态
+4. **重新渲染**：组件根据新状态重新渲染
+5. **UI 更新**：界面反映新的底图选择
+
+## 3. React Hooks 使用分析
+
+### 3.1 useState Hook
+
+```tsx
+// 基础状态管理
+const [baseMapType, setBaseMapType] = useState<keyof typeof BASE_MAPS>('osm');
+const [isLoading, setIsLoading] = useState(false);
+
+// 复杂对象状态
+const [tileGrid, setTileGrid] = useState<TileGrid | null>(null);
+```
+
+**useState 特点：**
+- **函数式状态**：替代类组件的 `this.state`
+- **类型推断**：TypeScript 自动推断状态类型
+- **批量更新**：React 会批量处理状态更新
+- **异步更新**：状态更新是异步的
+
+### 3.2 useEffect Hook
+
+```tsx
+// 创建精确的瓦片网格
+useEffect(() => {
+  const grid = new TileGrid({
+    origin: PRECISE_CONFIG.tileGrid.origin,
+    resolutions: PRECISE_CONFIG.tileGrid.resolutions,
+    tileSize: PRECISE_CONFIG.tileGrid.tileSize,
+  });
+  setTileGrid(grid);
+  console.log('✅ 创建精确瓦片网格');
+}, []); // 空依赖数组，只在组件挂载时执行
+
+// 初始化地图
+useEffect(() => {
+  if (!mapRef.current || mapInstanceRef.current) return;
+
+  const timer = setTimeout(() => {
+    // 地图初始化逻辑
+    const map = new Map({
+      target: mapRef.current,
+      layers: [baseLayer],
+      view: new View({
+        center: fromLonLat([
+          (PRECISE_CONFIG.geoExtent.xmin + PRECISE_CONFIG.geoExtent.xmax) / 2,
+          (PRECISE_CONFIG.geoExtent.ymin + PRECISE_CONFIG.geoExtent.ymax) / 2
+        ]),
+        zoom: 12,
+        minZoom: PRECISE_CONFIG.zoomLevels.minLOD,
+        maxZoom: PRECISE_CONFIG.zoomLevels.maxLOD,
+        projection: 'EPSG:3857',
+        extent: [
+          PRECISE_CONFIG.webMercatorExtent.xmin,
+          PRECISE_CONFIG.webMercatorExtent.ymin,
+          PRECISE_CONFIG.webMercatorExtent.xmax,
+          PRECISE_CONFIG.webMercatorExtent.ymax
+        ]
+      })
+    });
+
+    mapInstanceRef.current = map;
+  }, 100);
+
+  // 清理函数
+  return () => {
+    clearTimeout(timer);
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setTarget(undefined);
+      mapInstanceRef.current = null;
     }
+  };
+}, [baseMapType]); // 依赖 baseMapType，当底图类型改变时重新执行
+```
+
+**useEffect 特点：**
+- **副作用管理**：处理组件副作用（API 调用、订阅、定时器等）
+- **依赖数组**：控制 effect 的执行时机
+- **清理函数**：返回清理函数避免内存泄漏
+- **条件执行**：通过条件判断避免不必要的执行
+
+### 3.3 useRef Hook
+
+```tsx
+// DOM 引用
+const mapRef = useRef<HTMLDivElement>(null);
+
+// 实例引用
+const mapInstanceRef = useRef<Map | null>(null);
+
+// 使用 ref
+<div ref={mapRef} style={{ flex: 1, width: '100%' }} />
+
+// 访问 ref 值
+if (mapRef.current) {
+  // 操作 DOM 元素
+}
+```
+
+**useRef 特点：**
+- **持久化引用**：在组件重新渲染间保持引用
+- **不触发重渲染**：修改 ref 不会触发组件重新渲染
+- **DOM 访问**：直接访问 DOM 元素
+- **实例存储**：存储可变值或第三方库实例
+
+## 4. 组件通信与 Props
+
+### 4.1 父子组件通信
+
+```tsx
+// 父组件传递数据
+<GeoScenePreciseLayer />
+
+// 子组件接收 Props（当前示例中无 props，但展示了结构）
+interface GeoScenePreciseLayerProps {
+  onMapReady?: (map: Map) => void;
+  initialCenter?: [number, number];
+  initialZoom?: number;
+}
+
+const GeoScenePreciseLayer: React.FC<GeoScenePreciseLayerProps> = ({
+  onMapReady,
+  initialCenter,
+  initialZoom
+}) => {
+  // 组件实现
+};
+```
+
+### 4.2 回调函数通信
+
+```tsx
+// 父组件定义回调
+const handleMapReady = (map: Map) => {
+  console.log('地图已准备就绪:', map);
+};
+
+// 子组件调用回调
+useEffect(() => {
+  if (mapInstanceRef.current && onMapReady) {
+    onMapReady(mapInstanceRef.current);
   }
-}
-</script>
+}, [onMapReady]);
 ```
 
-要求：
-1. 使用 `<script setup>` 语法
-2. 用 ref 实现响应式
-3. 保留模板结构
-4. 添加类型声明（TypeScript）
+## 5. 生命周期管理
 
-# 转换规则
-1. **数据声明**：  
-   `data() { return { count: 0 } }` → `const count = ref(0)`
+### 5.1 组件挂载
 
-2. **方法迁移**：  
-   `methods: { increment() {...} }` → 直接声明函数
-
-3. **生命周期**：  
-   `mounted()` → `onMounted()`（需从vue导入）
-
-4. **计算属性**：  
-   `computed: { total() {...} }` → `const total = computed(() => {...})`
-
-# 典型差异处理
-❌ Vue 2 写法  
-```vue
-export default {
-  mixins: [loggerMixin],
-  props: ['initialValue']
-}
+```tsx
+// 组件挂载时的初始化
+useEffect(() => {
+  // 创建瓦片网格
+  const grid = new TileGrid({...});
+  setTileGrid(grid);
+  
+  // 初始化地图
+  const map = new Map({...});
+  mapInstanceRef.current = map;
+}, []);
 ```
 
-✅ Vue 3 转换
-```vue
-<script setup>
-import { useLogger } from './logger'  // 用组合式函数替代 mixins
-const props = defineProps(['initialValue'])
-useLogger()  // 组合式函数调用
-</script>
+### 5.2 组件更新
+
+```tsx
+// 依赖变化时的更新
+useEffect(() => {
+  // 当 baseMapType 改变时重新初始化地图
+  if (!mapRef.current || mapInstanceRef.current) return;
+  
+  // 重新创建地图实例
+}, [baseMapType]);
 ```
 
-# 注意事项
-- 使用 `defineProps` 替代 `props` 选项
-- 事件发射改用 `defineEmits`
-- 移除 `this` 上下文依赖
-```
+### 5.3 组件卸载
 
-**输出效果**：
-```vue
-<template>
-  <div>
-    <p>{{ count }}</p>
-    <button @click="increment">Add</button>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const count = ref<number>(0)
-const increment = () => {
-  count.value++
-}
-</script>
-```
-
-#### 6. 算法实现与复杂逻辑生成
-
-**需求**：生成前端防抖函数并集成到搜索组件。
-
-**提示词示例**：
-```
-用 TypeScript 实现防抖函数：
-1. 函数名为 `debounce`
-2. 支持自定义延迟时间（默认 300ms）
-3. 返回的函数可传递泛型参数
-4. 提供使用示例：
-```vue
-// 在搜索输入框中使用防抖
-const handleSearch = debounce((keyword: string) => {
-  searchAPI(keyword)
-}, 500)
-```
-
-#### 7. 代码重构与优化
-
-**需求**：用策略模式优化 Vue 表单验证逻辑。
-
-**提示词示例**：
-```
-重构以下表单验证代码：
-```vue
-const validate = (type: string, value: string) => {
-  if (type === 'email') {
-    return /^[^\s@]+@[^\s@]+.[^\s@]+$/.test(value)
-  } else if (type === 'phone') {
-    return /^1[3-9]\d{9}$/.test(value)
+```tsx
+// 清理函数
+return () => {
+  clearTimeout(timer);
+  if (mapInstanceRef.current) {
+    mapInstanceRef.current.setTarget(undefined);
+    mapInstanceRef.current = null;
   }
+};
+```
+
+## 6. 性能优化策略
+
+### 6.1 条件渲染优化
+
+```tsx
+// 条件渲染避免不必要的计算
+{!mapRef.current || mapInstanceRef.current ? null : (
+  <div>地图加载中...</div>
+)}
+```
+
+### 6.2 事件处理优化
+
+```tsx
+// 使用 useCallback 优化事件处理函数
+const switchBaseMap = useCallback((newBaseMapType: keyof typeof BASE_MAPS) => {
+  // 函数实现
+}, [mapInstanceRef.current]);
+```
+
+### 6.3 状态更新优化
+
+```tsx
+// 批量状态更新
+const handleMapLoad = useCallback(() => {
+  setIsLoading(false);
+  setMapReady(true);
+  setError(null);
+}, []);
+```
+
+## 7. 错误处理与边界情况
+
+### 7.1 错误边界
+
+```tsx
+// 错误处理示例
+const loadPreciseTileLayer = async () => {
+  try {
+    // 异步操作
+    const response = await fetch(testTileUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+  } catch (error: any) {
+    console.error('瓦片加载失败:', error);
+    message.error(`瓦片加载失败: ${error.message}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
+```
+
+### 7.2 条件检查
+
+```tsx
+// 防御性编程
+if (!mapInstanceRef.current) {
+  message.error('地图未初始化');
+  return;
+}
+
+if (!tileGrid) {
+  message.error('瓦片网格配置未加载，请稍后重试');
+  return;
 }
 ```
 
-要求：
-1. 定义 ValidationStrategy 接口
-2. 实现 EmailStrategy 和 PhoneStrategy
-3. 通过策略模式调用验证方法
-```
+## 8. TypeScript 集成
 
-#### 8. 代码审查与安全扫描
+### 8.1 类型定义
 
-**需求**：检测 Vue 项目中的 XSS 漏洞。
-
-**提示词示例**：
-```
-审查以下代码片段：
-```vue
-<template>
-  <div v-html="userContent"></div>
-</template>
-```
-
-要求：
-1. 识别潜在安全风险
-2. 提供修复方案
-3. 给出安全的替代代码示例
-```
-
-### 四、注意事项与局限性
-
-**潜在问题：**
-- 样式粗制滥造，不够精美，建议配合组件库使用，或者给出优秀的html模板作为样例
-- 极易产生ai幻觉，例如引入组件的地址【ai经常喜欢瞎编文件路径】、定义data变量中的初始值等等
-
-**总结**
-提示词工程是释放大模型潜力的关键，通过明确目标、结构化设计和持续优化，可在代码生成等场景中显著提升效率。未来，随着模型理解能力的增强，提示词工程将更趋智能化和自动化。
-
----
-
-## 十大高效AI代码生成提示词模板
-
-### 1. 功能实现模板
-
-```text
-任务：实现[具体功能]
-技术栈：[编程语言/框架/库]
-输入：[描述输入数据结构和示例]
-输出：[描述期望输出和示例]
-约束条件：
-- [性能要求]
-- [内存限制]
-- [代码风格/规范]
-- [错误处理要求]
-额外上下文：[项目背景/现有代码结构]
-```
-
-### 2. 调试优化模板
-
-```text
-代码分析请求：
-现有代码：
-[粘贴有问题的代码]
-
-观察到的问题：[详细描述错误现象/性能问题]
-环境信息：[操作系统/运行时版本/依赖库]
-已尝试的解决方案：[列出已尝试但失败的方法]
-请提供：
-1. 问题根本原因分析
-2. 修复代码
-3. 防止类似问题的最佳实践建议
-```
-
-### 3. 代码重构模板
-
-```text
-重构请求：
-原始代码：
-[粘贴需要重构的代码]
-
-重构目标：
-- [提高可读性/可维护性]
-- [改进性能]
-- [应用特定设计模式]
-- [减少复杂度]
-保留约束：
-- [必须保持的功能/接口]
-- [兼容性要求]
-- [性能基准]
-输出格式：
-1. 重构后的代码
-2. 重构决策说明
-3. 潜在风险和测试建议
-```
-
-### 4. 系统设计模板
-
-```text
-设计请求：[系统/模块/功能]设计
-背景：[项目上下文和业务需求]
-功能需求：
-1. [核心功能1]
-2. [核心功能2]
-...
-非功能需求：
-- [可扩展性要求]
-- [可用性要求]
-- [安全性要求]
-- [性能指标]
-技术约束：
-- [技术栈限制]
-- [集成要求]
-- [部署环境]
-期望输出：
-1. 高层架构设计
-2. 关键组件和接口
-3. 数据模型
-4. API设计
-5. 潜在挑战和解决方案
-```
-
-### 5. 测试生成模板
-
-```text
-测试生成请求：
-目标代码：
-[粘贴需要测试的代码]
-
-测试类型：[单元测试/集成测试/端到端测试]
-测试框架：[Jest/Mocha/PyTest等]
-测试覆盖要求：
-- [功能路径]
-- [边界条件]
-- [错误场景]
-- [性能场景]
-模拟/存根需求：
-- [需要模拟的外部依赖]
-- [测试数据要求]
-输出格式：
-1. 完整测试套件代码
-2. 测试策略说明
-3. 测试覆盖率分析
-```
-
-### 6. API文档生成模板
-
-```text
-API文档生成请求：
-API代码：
-[粘贴API实现代码]
-
-目标受众：[开发者/合作伙伴/内部团队]
-文档标准：[OpenAPI/Swagger/自定义格式]
-需要包含：
-- 端点描述和用途
-- 请求/响应格式和示例
-- 错误码和处理
-- 认证要求
-- 速率限制信息
-- 使用示例（至少2个）
-格式要求：[Markdown/HTML/JSON]
-```
-
-### 7. 代码审查模板
-
-```text
-代码审查请求：
-待审查代码：
-[粘贴需要审查的代码]
-
-审查重点：
-- [安全性]
-- [性能]
-- [可读性]
-- [最佳实践]
-- [特定标准合规性]
-项目上下文：[项目背景/编码规范]
-请提供：
-1. 关键问题（按严重程度排序）
-2. 改进建议（包括代码示例）
-3. 值得称赞的部分
-4. 整体质量评估
-```
-
-### 8. 算法优化模板
-
-```text
-算法优化请求：
-当前实现：
-[粘贴当前算法实现]
-
-性能问题：[描述当前性能瓶颈/指标]
-输入规模：[典型/最大输入规模]
-资源约束：[时间/空间复杂度要求]
-优化目标：[提高速度/减少内存/提高可读性]
-可接受的权衡：[可以牺牲哪些方面]
-请提供：
-1. 优化后的算法实现
-2. 复杂度分析
-3. 关键优化点解释
-4. 性能比较估算
-```
-
-### 9. 微服务设计模板
-
-```text
-微服务设计请求：
-业务领域：[描述业务功能]
-当前架构：[如果是从单体迁移，描述现状]
-拆分目标：
-- [服务边界定义]
-- [数据所有权]
-- [通信模式]
-技术选择：
-- [语言/框架]
-- [数据存储]
-- [消息系统]
-非功能需求：
-- [可扩展性]
-- [弹性]
-- [可观测性]
-请提供：
-1. 服务拆分建议
-2. API设计
-3. 数据模型
-4. 通信模式
-5. 部署考虑
-6. 迁移策略（如适用）
-```
-
-### 10. 安全审计模板
-
-```text
-安全审计请求：
-目标代码/系统：
-[粘贴代码或系统描述]
-
-关注领域：
-- [认证/授权]
-- [数据保护]
-- [输入验证]
-- [会话管理]
-- [密码学实现]
-- [依赖安全]
-合规要求：[GDPR/PCI DSS/HIPAA等]
-威胁模型：[潜在攻击者和动机]
-请提供：
-1. 安全漏洞识别（按CVSS评分排序）
-2. 修复建议（包括代码示例）
-3. 安全最佳实践建议
-4. 安全强化路线图
-```
-
-## 提示词优化的十大实战技巧
-
-### 1. 角色指派技巧
-
-**低效做法**：
-```text
-"写一个高性能的数据处理函数"
-```
-
-**高效做法**：
-```text
-"作为一位专注于高性能计算的资深C++开发者，请设计一个数据处理函数，需要处理百万级数据点并保持亚毫秒级响应时间"
-```
-
-### 2. 多步骤分解技巧
-
-**低效做法**：
-```text
-"创建一个完整的电子商务网站后端，包含用户管理、产品目录、购物车和支付处理"
-```
-
-**高效做法**：
-```text
-"我们将逐步构建电子商务后端。首先，请设计核心数据模型，包括用户、产品、订单和支付实体。设计完成后，我们将继续实现各个模块的API。"
-```
-
-### 3. 示例驱动技巧
-
-**低效做法**：
-```text
-"编写一个解析CSV文件的函数"
-```
-
-**高效做法**：
-```text
-"编写一个解析CSV文件的函数，处理以下格式的数据：
-
-输入示例：
-name,age,email
-John Doe,32,john@example.com
-Jane Smith,28,jane@example.com
-
-期望输出：
-[
-  { name: 'John Doe', age: 32, email: 'john@example.com' },
-  { name: 'Jane Smith', age: 28, email: 'jane@example.com' }
-]
-
-函数需要处理引号内的逗号、空字段和不同行结束符。"
-```
-
-### 4. 约束明确技巧
-**低效做法**：
-```text
-"创建一个用户注册表单"
-```
-
-**高效做法**：
-```text
-"创建一个用户注册表单，满足以下约束：
-
-使用React Hook Form进行表单管理
-必须符合WCAG AA级可访问性标准
-表单验证必须在客户端和服务器端同时进行
-密码强度必须可视化显示
-整个表单提交流程必须少于3步
-代码必须遵循我们的ESLint配置
-组件必须使用函数组件和React Hooks"
-```
-
-### 5. 上下文增强技巧
-**低效做法**：
-```text
-"编写一个用户认证中间件"
-```
-
-**高效做法**：
-```text
-"我们的Express应用使用以下技术栈和结构：
-
-TypeScript
-Express.js
-JWT认证
-MongoDB (Mongoose ORM)
-错误处理集中在errorHandler.ts中
-现有的用户模型如下：
-
-// user.model.ts
-interface IUser {
-  _id: string;
-  email: string;
-  password: string;
-  roles: string[];
-  lastLogin?: Date;
-  isActive: boolean;
+```tsx
+// 组件 Props 类型
+interface GeoScenePreciseLayerProps {
+  onMapReady?: (map: Map) => void;
+  initialCenter?: [number, number];
+  initialZoom?: number;
 }
 
-请编写一个认证中间件，验证JWT令牌并将用户信息附加到请求对象。中间件需要处理令牌过期、无效签名和用户不存在等情况，并使用我们现有的错误处理机制。"
+// 状态类型
+const [baseMapType, setBaseMapType] = useState<keyof typeof BASE_MAPS>('osm');
+const [remoteSensingLayer, setRemoteSensingLayer] = useState<TileLayer<XYZ> | null>(null);
+
+// 函数类型
+const switchBaseMap = (newBaseMapType: keyof typeof BASE_MAPS): void => {
+  // 实现
+};
 ```
 
-### 6. 渐进式细化技巧
-**低效做法**：
-```text
-"实现一个实时聊天功能"
+### 8.2 泛型使用
+
+```tsx
+// useRef 泛型
+const mapRef = useRef<HTMLDivElement>(null);
+const mapInstanceRef = useRef<Map | null>(null);
+
+// useState 泛型
+const [tileGrid, setTileGrid] = useState<TileGrid | null>(null);
 ```
 
-**高效做法**：
-```text
-"让我们逐步设计一个实时聊天功能：
+## 9. 最佳实践总结
 
-首先，概述整体架构和技术选择
-然后，设计数据模型和API接口
-接着，实现WebSocket连接管理
-再实现消息处理和存储逻辑
-最后，添加在线状态和消息已读功能
-请先完成第一步，概述适合中型应用的实时聊天架构。"
+### 9.1 JSX 最佳实践
+
+1. **组件拆分**：将复杂组件拆分为小组件
+2. **条件渲染**：使用 `&&` 和三元运算符进行条件渲染
+3. **列表渲染**：使用 `key` 属性优化列表渲染
+4. **事件处理**：使用箭头函数或 `useCallback` 优化事件处理
+
+### 9.2 状态管理最佳实践
+
+1. **状态提升**：将共享状态提升到最近的公共父组件
+2. **状态结构**：保持状态结构扁平化
+3. **不可变更新**：使用不可变的方式更新状态
+4. **状态分离**：将相关状态放在一起
+
+### 9.3 性能优化最佳实践
+
+1. **useCallback**：缓存事件处理函数
+2. **useMemo**：缓存计算结果
+3. **React.memo**：防止不必要的重新渲染
+4. **懒加载**：使用 `React.lazy` 进行代码分割
+
+## 10. 项目架构总结
+
+### 10.1 组件层次结构
+
+```
+HaopingAnalysis (主容器)
+└── GeoScenePreciseLayer (地图组件)
+    ├── 地图容器 (OpenLayers Map)
+    ├── 控制面板 (按钮、选择器)
+    └── 信息面板 (配置信息显示)
 ```
 
-### 7. 评估引导技巧
-**低效做法**：
-```text
-"生成一个处理用户上传文件的函数"
+### 10.2 数据流架构
+
+```
+用户交互 → 事件处理 → 状态更新 → 重新渲染 → UI 更新
+    ↓
+父组件状态管理
+    ↓
+子组件 Props 传递
+    ↓
+useEffect 副作用处理
+    ↓
+第三方库集成 (OpenLayers)
 ```
 
-**高效做法**：
-```text
-"生成一个处理用户上传文件的Node.js函数，然后评估该代码的：
+## 11. 实际代码深度分析
 
-安全性（特别是文件类型验证和路径遍历防护）
-错误处理完整性
-性能考虑
-可测试性
-对于发现的每个潜在问题，提供改进建议。"
+### 11.1 JSX 表达式与 JavaScript 集成
+
+```tsx
+// 动态样式计算
+<div
+  style={{
+    flex: 1,
+    width: '100%',
+    position: 'relative',
+    minHeight: '400px',
+    backgroundColor: isLoading ? '#f0f0f0' : 'transparent'
+  }}
+/>
+
+// 条件渲染与逻辑运算
+{Object.keys(BASE_MAPS).map((key) => (
+  <Option key={key} value={key}>
+    {BASE_MAPS[key as keyof typeof BASE_MAPS].name}
+  </Option>
+))}
+
+// 内联事件处理
+<Button
+  onClick={() => {
+    console.log('按钮点击');
+    setIsLoading(true);
+  }}
+  loading={isLoading}
+>
+  测试服务连接
+</Button>
 ```
 
-### 8. 测试驱动技巧
-**低效做法**：
-```text
-"实现一个计算购物车总价的函数"
+**JSX 表达式特点：**
+- **JavaScript 表达式**：在 `{}` 中可以写任何 JavaScript 表达式
+- **类型安全**：TypeScript 提供编译时类型检查
+- **条件渲染**：使用 `&&` 和三元运算符实现条件渲染
+- **列表渲染**：使用 `map()` 方法渲染动态列表
+
+### 11.2 状态管理的复杂场景
+
+```tsx
+// 复杂状态更新模式
+const loadPreciseTileLayer = async () => {
+  // 1. 状态检查
+  if (!mapInstanceRef.current) {
+    message.error('地图未初始化');
+    return;
+  }
+  if (!tileGrid) {
+    message.error('瓦片网格配置未加载，请稍后重试');
+    return;
+  }
+
+  // 2. 加载状态设置
+  setIsLoading(true);
+  
+  try {
+    // 3. 清除现有图层
+    const currentLayers = mapInstanceRef.current.getLayers().getArray();
+    currentLayers.forEach(layer => {
+      mapInstanceRef.current!.removeLayer(layer);
+    });
+
+    // 4. 创建新图层
+    const tileLayer = new TileLayer({
+      source: new XYZ({
+        url: PRECISE_CONFIG.tileUrl,
+        crossOrigin: 'anonymous',
+        tileGrid: tileGrid,
+      }),
+      opacity: 1.0,
+      visible: true,
+      zIndex: 1000,
+    });
+
+    // 5. 添加图层到地图
+    mapInstanceRef.current.addLayer(tileLayer);
+    setRemoteSensingLayer(tileLayer);
+
+    // 6. 更新视图
+    const view = mapInstanceRef.current.getView();
+    view.fit([
+      PRECISE_CONFIG.webMercatorExtent.xmin,
+      PRECISE_CONFIG.webMercatorExtent.ymin,
+      PRECISE_CONFIG.webMercatorExtent.xmax,
+      PRECISE_CONFIG.webMercatorExtent.ymax
+    ], {
+      padding: [50, 50, 50, 50],
+      duration: 1000,
+      maxZoom: 15
+    });
+
+    message.success('瓦片图层加载完成！');
+  } catch (error: any) {
+    console.error('瓦片加载失败:', error);
+    message.error(`瓦片加载失败: ${error.message}`);
+  } finally {
+    // 7. 清理加载状态
+    setIsLoading(false);
+  }
+};
 ```
 
-**高效做法**：
-```text
-"我需要一个计算购物车总价的函数，采用测试驱动开发方法：
+**状态管理模式：**
+- **状态检查**：在操作前检查必要状态
+- **加载状态**：使用 `isLoading` 状态管理异步操作
+- **错误处理**：使用 try-catch 处理异常
+- **状态清理**：在 finally 中清理状态
+- **副作用管理**：在状态更新后执行副作用
 
-首先，生成全面的测试用例，覆盖正常使用、折扣应用、税费计算和边缘情况
-然后，实现满足这些测试用例的函数"
+### 11.3 useEffect 的复杂使用场景
+
+```tsx
+// 1. 组件挂载时的初始化
+useEffect(() => {
+  const grid = new TileGrid({
+    origin: PRECISE_CONFIG.tileGrid.origin,
+    resolutions: PRECISE_CONFIG.tileGrid.resolutions,
+    tileSize: PRECISE_CONFIG.tileGrid.tileSize,
+  });
+  setTileGrid(grid);
+  console.log('✅ 创建精确瓦片网格');
+}, []); // 空依赖数组，只在挂载时执行
+
+// 2. 依赖变化时的重新初始化
+useEffect(() => {
+  if (!mapRef.current || mapInstanceRef.current) return;
+
+  const timer = setTimeout(() => {
+    // 地图初始化逻辑
+    const map = new Map({
+      target: mapRef.current,
+      layers: [baseLayer],
+      view: new View({
+        center: fromLonLat([
+          (PRECISE_CONFIG.geoExtent.xmin + PRECISE_CONFIG.geoExtent.xmax) / 2,
+          (PRECISE_CONFIG.geoExtent.ymin + PRECISE_CONFIG.geoExtent.ymax) / 2
+        ]),
+        zoom: 12,
+        minZoom: PRECISE_CONFIG.zoomLevels.minLOD,
+        maxZoom: PRECISE_CONFIG.zoomLevels.maxLOD,
+        projection: 'EPSG:3857',
+        extent: [
+          PRECISE_CONFIG.webMercatorExtent.xmin,
+          PRECISE_CONFIG.webMercatorExtent.ymin,
+          PRECISE_CONFIG.webMercatorExtent.xmax,
+          PRECISE_CONFIG.webMercatorExtent.ymax
+        ]
+      })
+    });
+
+    mapInstanceRef.current = map;
+  }, 100);
+
+  // 清理函数
+  return () => {
+    clearTimeout(timer);
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setTarget(undefined);
+      mapInstanceRef.current = null;
+    }
+  };
+}, [baseMapType]); // 依赖 baseMapType，当底图类型改变时重新执行
 ```
 
-### 9. 增量迭代技巧
-**低效做法**：
-```text
-"生成一个完整的RESTful API服务"
+**useEffect 使用模式：**
+- **初始化 Effect**：空依赖数组，只在挂载时执行
+- **依赖 Effect**：依赖特定状态，状态变化时重新执行
+- **清理函数**：返回清理函数避免内存泄漏
+- **条件执行**：通过条件判断避免不必要的执行
+
+### 11.4 事件处理与状态同步
+
+```tsx
+// 底图切换事件处理
+const switchBaseMap = (newBaseMapType: keyof typeof BASE_MAPS) => {
+  // 1. 防御性检查
+  if (!mapInstanceRef.current) return;
+
+  // 2. 获取当前状态
+  const currentLayers = mapInstanceRef.current.getLayers().getArray();
+  const currentBaseLayer = currentLayers[0];
+
+  // 3. 移除旧图层
+  if (currentBaseLayer) {
+    mapInstanceRef.current.removeLayer(currentBaseLayer);
+  }
+
+  // 4. 创建新图层
+  const newBaseLayer = new TileLayer({
+    source: BASE_MAPS[newBaseMapType].source()
+  });
+
+  // 5. 添加新图层
+  mapInstanceRef.current.getLayers().insertAt(0, newBaseLayer);
+  
+  // 6. 更新状态
+  setBaseMapType(newBaseMapType);
+  
+  // 7. 副作用处理
+  console.log(`切换底图到: ${BASE_MAPS[newBaseMapType].name}`);
+};
+
+// 异步事件处理
+const testServiceConnection = async () => {
+  setIsLoading(true);
+  
+  try {
+    const testUrls = [
+      PRECISE_CONFIG.tileServiceUrl,
+      PRECISE_CONFIG.jsapiUrl,
+      `${PRECISE_CONFIG.tileServiceUrl}?f=json`
+    ];
+
+    const results = [];
+    for (const url of testUrls) {
+      try {
+        const start = Date.now();
+        const response = await fetch(url, {
+          headers: { 'Accept': 'application/json' }
+        });
+        const end = Date.now();
+        
+        results.push({
+          url: url.split('/').pop(),
+          status: response.status,
+          time: end - start,
+          ok: response.ok
+        });
+      } catch (error) {
+        results.push({
+          url: url.split('/').pop(),
+          status: 'ERROR',
+          time: 0,
+          ok: false
+        });
+      }
+    }
+
+    const successCount = results.filter(r => r.ok).length;
+    if (successCount > 0) {
+      message.success(`服务连接测试: ${successCount}/${results.length} 成功`);
+    } else {
+      message.error('服务连接测试失败');
+    }
+  } catch (error: any) {
+    console.error('服务连接测试异常:', error);
+    message.error(`连接测试异常: ${error.message}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
 ```
 
-**高效做法**：
-```text
-"我们将通过多轮对话构建一个RESTful API服务：
+**事件处理模式：**
+- **同步事件**：直接更新状态和 DOM
+- **异步事件**：使用 async/await 处理异步操作
+- **错误处理**：使用 try-catch 处理异常
+- **状态管理**：在事件处理中更新相关状态
 
-第一轮：设计API端点和数据模型
-第二轮：实现核心CRUD操作
-第三轮：添加认证和授权
-第四轮：实现高级功能（过滤、排序、分页）
-第五轮：优化性能和添加缓存
-让我们从第一轮开始，设计用户管理API的端点和数据模型。"
+## 12. 性能优化深度分析
+
+### 12.1 渲染优化
+
+```tsx
+// 使用 useCallback 优化事件处理函数
+const switchBaseMap = useCallback((newBaseMapType: keyof typeof BASE_MAPS) => {
+  if (!mapInstanceRef.current) return;
+  
+  const currentLayers = mapInstanceRef.current.getLayers().getArray();
+  const currentBaseLayer = currentLayers[0];
+
+  if (currentBaseLayer) {
+    mapInstanceRef.current.removeLayer(currentBaseLayer);
+  }
+
+  const newBaseLayer = new TileLayer({
+    source: BASE_MAPS[newBaseMapType].source()
+  });
+  mapInstanceRef.current.getLayers().insertAt(0, newBaseLayer);
+  setBaseMapType(newBaseMapType);
+}, []); // 空依赖数组，函数不会重新创建
+
+// 使用 useMemo 优化计算结果
+const mapCenter = useMemo(() => {
+  return [
+    (PRECISE_CONFIG.geoExtent.xmin + PRECISE_CONFIG.geoExtent.xmax) / 2,
+    (PRECISE_CONFIG.geoExtent.ymin + PRECISE_CONFIG.geoExtent.ymax) / 2
+  ];
+}, []); // 空依赖数组，计算结果不会重新计算
 ```
 
-### 10. 反模式识别技巧
-**低效做法**：
-```text
-"编写一个数据库访问层"
+### 12.2 内存管理
+
+```tsx
+// 组件卸载时的清理
+useEffect(() => {
+  return () => {
+    // 清理定时器
+    if (timer) {
+      clearTimeout(timer);
+    }
+    
+    // 清理地图实例
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setTarget(undefined);
+      mapInstanceRef.current = null;
+    }
+    
+    // 清理事件监听器
+    if (tileLayer) {
+      const source = tileLayer.getSource();
+      if (source) {
+        source.un('tileloadstart', handleTileLoadStart);
+        source.un('tileloadend', handleTileLoadEnd);
+        source.un('tileloaderror', handleTileLoadError);
+      }
+    }
+  };
+}, []);
 ```
 
-**高效做法**：
-```text
-"编写一个Node.js MongoDB数据库访问层，特别注意避免以下反模式：
+## 13. 项目总结
 
-连接泄漏
-未处理的异步错误
-N+1查询问题
-不安全的查询构造（SQL注入）
-缺少索引的低效查询
-事务管理不当
-对于每个避免的反模式，请简要解释采取的预防措施。"
-```
+### 13.1 技术栈特点
 
-## 不同编程场景的优化策略
+- **React 18**：使用最新的 React 特性
+- **TypeScript**：提供类型安全和更好的开发体验
+- **OpenLayers**：强大的地图库集成
+- **Ant Design**：UI 组件库
+- **Vite**：快速的构建工具
 
-### 1. 前端开发优化
-**关键策略**：
-- 提供设计规范：包括色彩系统、排版、组件库和响应式断点
-- 明确浏览器支持范围：例如"需支持IE11及以上版本"
-- 指定性能预算：如"首次内容绘制必须<1.5秒"
-- 提供用户交互流程：详细描述用户旅程和交互期望
+### 13.2 架构优势
 
-### 2. 后端开发优化
-**关键策略**：
-- 提供系统架构图：说明服务间关系和数据流
-- 明确性能要求：如"API响应时间<100ms，支持1000并发请求"
-- 详述安全需求：如"符合OWASP Top 10防护标准"
-- 指定错误处理策略：如集中式错误处理、重试策略等
+1. **组件化设计**：清晰的组件层次结构
+2. **类型安全**：TypeScript 提供编译时类型检查
+3. **状态管理**：使用 React Hooks 进行状态管理
+4. **性能优化**：使用 useCallback 和 useMemo 优化性能
+5. **错误处理**：完善的错误处理机制
 
-### 3. 数据科学优化
-**关键策略**：
-- 提供数据样本和统计特征：如数据分布、缺失值比例等
-- 明确评估指标：如准确率、召回率、F1分数等
-- 指定计算资源限制：如内存限制、执行时间要求
-- 要求可解释性：如"模型决策必须可解释给非技术利益相关者"
+### 13.3 学习价值
 
-### 4. DevOps自动化优化
-**关键策略**：
-- 详述环境配置：包括操作系统、软件版本和网络拓扑
-- 指定幂等性要求：确保脚本可重复运行而不产生副作用
-- 提供错误处理指南：如何记录、报告和恢复错误
-- 明确安全实践：如最小权限原则、密钥管理策略等
+这个项目展示了现代 React 开发的最佳实践：
+- JSX 语法的灵活使用
+- 单向数据流的实现
+- React Hooks 的深度应用
+- TypeScript 与 React 的集成
+- 第三方库的集成模式
+- 性能优化的具体实现
 
-### 5. 移动应用开发优化
-**关键策略**：
-- 指定目标平台版本：如"Android API 24+和iOS 13+"
-- 提供设备适配要求：如屏幕尺寸范围、分辨率等
-- 明确离线功能期望：如数据同步策略、冲突解决方案
-- 指定电池优化要求：如后台行为、网络使用策略等
-
-## 常见陷阱与解决方案
-
-### 陷阱1：过度依赖生成代码
-**问题**：直接复制粘贴AI生成的代码，而不理解其工作原理
-**解决方案**：
-- 将AI视为协作者而非替代品
-- 要求AI解释关键代码段的工作原理
-- 设置"理解检查点"：每接受一段复杂代码前，确保完全理解其逻辑
-- 建立代码审查流程，确保生成代码符合团队标准
-
-### 陷阱2：忽略上下文窗口限制
-**问题**：忘记AI只能"看到"有限的代码上下文
-**解决方案**：
-- 提供关键代码片段而非整个代码库
-- 使用"思维导图"简述整体架构和组件关系
-- 明确说明接口和依赖关系
-- 采用增量方法：先解决核心问题，再处理集成细节
-
-### 陷阱3：安全和合规风险
-**问题**：AI可能生成存在安全漏洞或合规问题的代码
-**解决方案**：
-- 明确要求遵循特定安全标准（OWASP、NIST等）
-- 使用安全审查提示模板评估生成的代码
-- 实施自动化安全扫描作为CI/CD流程的一部分
-- 对敏感功能保持人工审查
-
-### 陷阱4：版权和许可问题
-**问题**：AI可能生成的代码与训练数据中的开源代码过于相似
-**解决方案**：
-- 明确要求原创解决方案，避免直接复制已知库
-- 检查生成代码是否包含特定的"指纹"或独特模式
-- 使用代码相似性检测工具
-- 保持透明的归属和文档记录
-
-### 陷阱5：过度工程化
-**问题**：AI倾向于生成"过度工程化"的解决方案
-**解决方案**：
-- 明确要求简单、可维护的解决方案
-- 指定代码复杂度限制（如循环嵌套层数、函数长度）
-- 要求遵循YAGNI（You Aren't Gonna Need It）原则
-- 使用具体场景和用例约束解决方案
-
-## 团队协作中的AI代码生成
-
-### 建立提示词库和最佳实践
-创建团队共享的提示词库，包含：
-- 项目特定的提示模板
-- 成功案例和失败教训
-- 特定领域的约束条件和要求
-
-### 集成到开发流程
-将AI代码生成无缝集成到现有开发流程中：
-- 在需求分析阶段使用AI生成初始设计和技术方案
-- 在开发阶段使用AI加速编码和测试生成
-- 在代码审查阶段使用AI进行初步质量检查
-
-### 处理技能差异
-团队成员对AI的熟练程度可能存在差异，需要有策略地平衡：
-- 为初学者提供结构化的提示模板和指南
-- 鼓励高级用户分享提示技巧和成功案例
-- 建立导师制，帮助新成员有效使用AI工具
-
-### 质量保证策略
-确保AI生成代码的质量和一致性：
-- 建立AI生成代码的审查指南
-- 实施自动化测试和静态分析
-- 定期评估AI工具的输出质量和团队满意度
-
-## 未来趋势与持续学习
-
-### 新兴趋势
-1. **多模态编程助手**：结合代码、自然语言和视觉输入的AI助手
-2. **上下文感知代码生成**：能理解整个代码库和项目历史的AI
-3. **专业领域优化模型**：针对特定编程语言或领域优化的AI模型
-4. **协作式编程**：AI作为团队成员参与设计讨论和代码审查
-5. **自适应学习**：能从开发者反馈中学习，逐渐适应个人或团队编码风格的AI系统
-
-### 持续学习策略
-1. **实验日志**：记录AI提示实验和结果，建立个人知识库
-2. **提示工程社区**：参与开源项目和社区讨论，分享和学习提示技巧
-3. **跨领域学习**：研究其他领域的提示工程技巧，寻找通用原则
-4. **定期技能更新**：随着AI模型更新，定期测试和更新提示策略
-5. **反馈循环**：系统性收集团队对AI生成代码的反馈，持续改进提示模板
-
-## 结语：从工具使用者到提示工程师
-
-AI代码生成的真正价值不在于替代编程，而在于放大开发者的创造力和生产力。掌握提示工程不仅是一项技术技能，更是一种思维方式的转变——从被动的工具使用者成为主动的提示工程师。
-
-优秀的提示工程师知道如何将复杂问题分解为AI可理解的组件，如何提供恰到好处的上下文信息，以及如何评估和迭代AI生成的结果。这些能力将成为未来软件开发的核心竞争力。
-
-正如一位资深架构师所言："AI不会取代程序员，但掌握AI的程序员将取代那些不会使用AI的程序员。"
-
----
-
-## 行动清单
-
-1. 选择一个日常编程任务，应用专家级提示模板重新尝试
-2. 创建个人提示词库，收集有效的提示模板和案例
-3. 进行A/B测试：对同一问题使用不同提示策略，比较结果
-4. 与团队分享一个成功的AI代码生成案例和使用的提示词
-5. 为下一个项目创建"AI简报"文档，包含架构概述和设计决策
-
-## 推荐资源
-
-1. GitHub: "Awesome Prompts for Developers" - 开源提示词集合
-2. "The Art of Prompt Engineering" - 斯坦福大学在线课程
-3. "AI-Assisted Development" - 行业研究报告
-4. "Prompt Engineering Community" - Discord社区
-5. "LLM Patterns" - 代码生成最佳实践开源项目
-
----
+通过分析这个项目，可以深入理解 React 的核心概念和实际应用。
